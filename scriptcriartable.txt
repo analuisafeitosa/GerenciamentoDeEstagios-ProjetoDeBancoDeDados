@@ -1,0 +1,95 @@
+
+criar tabela
+-- ===== TABELA PESSOA =====
+CREATE TABLE pessoa (
+    id_pessoa SERIAL PRIMARY KEY,
+    cpf VARCHAR(14) UNIQUE NOT NULL,
+    matricula VARCHAR(20),
+    email VARCHAR(150),
+    nome VARCHAR(150) NOT NULL,
+    cidade VARCHAR(100),
+    cep VARCHAR(10)
+);
+
+-- ===== PROFESSOR =====
+CREATE TABLE professor (
+    id_pessoa INTEGER PRIMARY KEY REFERENCES pessoa(id_pessoa),
+    turmas VARCHAR(100),
+    departamento VARCHAR(100)
+);
+
+-- ===== ALUNO =====
+CREATE TABLE aluno (
+    id_pessoa INTEGER PRIMARY KEY REFERENCES pessoa(id_pessoa),
+    periodo VARCHAR(20),
+    id_professor INTEGER REFERENCES professor(id_pessoa)
+);
+
+-- ===== EMPRESA =====
+CREATE TABLE empresa (
+    id_empresa SERIAL PRIMARY KEY,
+    nome VARCHAR(150)
+);
+
+-- ===== FUNCIONARIO =====
+CREATE TABLE funcionario (
+    id_funcionario SERIAL PRIMARY KEY,
+    id_empresa INTEGER REFERENCES empresa(id_empresa),
+    nome VARCHAR(150)
+);
+
+-- ===== SUPERVISOR DE ESTÁGIO =====
+CREATE TABLE supervisor_estagio (
+    id_supervisor SERIAL PRIMARY KEY,
+    id_funcionario INTEGER REFERENCES funcionario(id_funcionario)
+);
+
+-- ===== RELATÓRIO =====
+CREATE TABLE relatorio (
+    id_relatorio SERIAL PRIMARY KEY,
+    id_aluno INTEGER REFERENCES aluno(id_pessoa),
+    titulo VARCHAR(200),
+    data DATE,
+    candidata VARCHAR(150),
+    horario VARCHAR(20)
+);
+
+-- ===== CONTRATO =====
+CREATE TABLE contrato (
+    id_contrato SERIAL PRIMARY KEY,
+    id_relatorio INTEGER REFERENCES relatorio(id_relatorio),
+    id_supervisor INTEGER REFERENCES supervisor_estagio(id_supervisor),
+    carga_horaria INTEGER,
+    data_inicio DATE,
+    data_finalizacao DATE
+);
+-- ===== TITULAÇÃO DE PROFESSOR (ENTIDADE FRACA) =====
+CREATE TABLE professor_titulacao (
+    id_pessoa INTEGER REFERENCES professor(id_pessoa),
+    titulacao VARCHAR(100),
+    PRIMARY KEY (id_pessoa, titulacao)
+);
+
+-- ===== VAGA =====
+CREATE TABLE vaga (
+    id_vaga SERIAL PRIMARY KEY,
+    id_empresa INTEGER REFERENCES empresa(id_empresa),
+    descricao VARCHAR(200)
+);
+
+-- ===== CANDIDATURA (TABELA ASSOCIATIVA) =====
+CREATE TABLE candidatura (
+    id_aluno INTEGER REFERENCES aluno(id_pessoa),
+    id_vaga INTEGER REFERENCES vaga(id_vaga),
+    horario VARCHAR(20),
+    PRIMARY KEY (id_aluno, id_vaga)
+);
+--inserir dados--
+INSERT INTO pessoa (cpf, matricula, email, nome, cidade, cep)
+VALUES
+('123.456.789-00', '2025001', 'ana@mail.com', 'Ana Souza', 'Recife', '50000-000'),
+('987.654.321-00', '2025002', 'bruno@mail.com', 'Bruno Silva', 'Olinda', '53000-000'),
+('555.444.333-22', '2025003', 'carla@mail.com', 'Carla Mendes', 'Recife', '51000-000');
+
+--consulta--
+SELECT * FROM pessoa;
