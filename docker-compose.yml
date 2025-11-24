@@ -9,6 +9,9 @@ services:
       POSTGRES_DB: gerenciamento_estagios
     ports:
       - "5432:5432"
+    volumes:
+      - ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf:ro
+    command: postgres -c "hba_file=/var/lib/postgresql/data/pg_hba.conf" -c "ssl=on" -c "ssl_cert_file=/var/lib/postgresql/certificates/server.crt" -c "ssl_key_file=/var/lib/postgresql/certificates/server.key"
 
   pgadmin:
     image: dpage/pgadmin4
@@ -19,3 +22,19 @@ services:
       - "8888:80"
     depends_on:
       - postgres
+
+  app:
+    build: .
+    working_dir: /app
+    volumes:
+      - ./:/app
+    depends_on:
+      - postgres
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: gerenciamento_estagios
+    ports:
+      - "5000:5000"
