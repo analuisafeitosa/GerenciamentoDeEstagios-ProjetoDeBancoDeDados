@@ -11,7 +11,9 @@ services:
       - "5432:5432"
     volumes:
       - ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf:ro
-    command: postgres -c "hba_file=/var/lib/postgresql/data/pg_hba.conf" -c "ssl=on" -c "ssl_cert_file=/var/lib/postgresql/certificates/server.crt" -c "ssl_key_file=/var/lib/postgresql/certificates/server.key"
+      - ./create_table.sql:/docker-entrypoint-initdb.d/01-create-tables.sql:ro
+      - ./insert_table.sql:/docker-entrypoint-initdb.d/02-insert-data.sql:ro
+    command: postgres -c "hba_file=/var/lib/postgresql/data/pg_hba.conf"
 
   pgadmin:
     image: dpage/pgadmin4
